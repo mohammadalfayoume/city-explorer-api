@@ -41,11 +41,12 @@ async function moviesHandle(req, res) {
 
   try {
     let apiResult = await axios.get(url);
-    console.log(apiResult);
+    //console.log(apiResult);
     let collectData = apiResult.data.results.map((item) => {
+      console.log(item);
       return new movie(item);
     });
-    console.log(collectData);
+    //console.log(collectData);
     res.send(collectData);
   } catch {
     let errorObj = {
@@ -105,14 +106,30 @@ class Weather {
   }
 }
 class movie {
+  /*
+    adult: false,
+  backdrop_path: '/ohp0ZrioXFTe3v9HyqSiN510DAP.jpg',
+  genre_ids: [ 10402, 53 ],
+  id: 328483,
+  original_language: 'en',
+  original_title: 'London Road',
+  overview: '',
+  popularity: 4.516,
+  poster_path: '/rBmD6iNy9YivXUV2oppOm6DFCvJ.jpg',
+  release_date: '2015-06-12',
+  title: 'London Road',
+  video: false,
+  vote_average: 6,
+  vote_count: 28
+  */
   constructor(item) {
-    this.title = item.title;
+    this.title = item.original_title;
     this.overview = item.overview;
-    this.average_votes = item.average_votes;
-    this.total_votes = item.total_votes;
-    this.image_url = item.image_url;
+    this.average_votes = item.vote_average;
+    this.total_votes = item.vote_count;
+    this.image_url = item.poster_path;
     this.popularity = item.popularity;
-    this.released_on = item.released_on;
+    this.released_on = item.release_date;
   }
 }
 
