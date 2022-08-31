@@ -33,24 +33,27 @@ const key2 = process.env.MOVIES_API_KEY;
 server.get("/weather", weatherHandle);
 server.get("/movies", moviesHandle);
 
+// http://localhost:3002/movies?name=london
 async function moviesHandle(req, res) {
   let name = req.query.name;
   let url = `https://api.themoviedb.org/3/search/movie?api_key=${key2}&language=en-US&query=${name}&page=1&include_adult=false`;
-  let apiResult = await axios.get(url);
-  //console.log(apiResult);
-  let collectData = apiResult.data.results.map((item) => {
-    return new movie(
-      item.original_title,
-      item.overview,
-      item.vote_average,
-      item.vote_count,
-      item.poster_path,
-      item.popularity,
-      item.release_date
-    );
-  });
-  //console.log(collectData);
-  res.send(collectData);
+  // console.log(url);
+
+  try {
+    let apiResult = await axios.get(url);
+    console.log(apiResult);
+    let collectData = apiResult.data.results.map((item) => {
+      return new movie(item);
+    });
+    console.log(collectData);
+    res.send(collectData);
+  } catch {
+    let errorObj = {
+      error: "Three is an error",
+      msg: "Try later please",
+    };
+    res.status(404).send(errorObj);
+  }
 }
 /*
 
@@ -85,13 +88,13 @@ async function weatherHandle(req, res) {
       return new Weather(item);
     });
     console.log(collectData);
-    res.send(collectData);
+    res.status(200).send(collectData);
   } catch {
     let errorObj = {
       error: "Three is an error",
       msg: "Try later please",
     };
-    res.send(errorObj);
+    res.status(404).send(errorObj);
   }
 }
 
@@ -102,22 +105,14 @@ class Weather {
   }
 }
 class movie {
-  constructor(
-    title,
-    desc,
-    avgVotes,
-    totalVotes,
-    poster,
-    populartiy,
-    relaseDate
-  ) {
-    this.title = title;
-    this.overview = desc;
-    this.average_votes = avgVotes;
-    this.total_votes = totalVotes;
-    this.image_url = poster;
-    this.popularity = populartiy;
-    this.released_on = relaseDate;
+  constructor(item) {
+    this.title = item.title;
+    this.overview = item.overview;
+    this.average_votes = item.average_votes;
+    this.total_votes = item.total_votes;
+    this.image_url = item.image_url;
+    this.popularity = item.popularity;
+    this.released_on = item.released_on;
   }
 }
 
